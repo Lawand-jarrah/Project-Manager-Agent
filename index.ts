@@ -169,7 +169,6 @@ while (true) {
     const result = await openai.chat.completions.create({
       model: "gpt-6-luna",
       messages,
-      response_format: { type: "json_object" },
     });
 
     const raw = result.choices[0]?.message?.content ?? "";
