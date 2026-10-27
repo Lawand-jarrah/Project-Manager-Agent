@@ -1,2 +1,7 @@
 .env
+bin/
+obj/
 node_modules/
+src/ProjectManagerAgent/wwwroot/js/
+src/ProjectManagerAgent/data/
+.DS_Store
