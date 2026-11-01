@@ -150,7 +150,7 @@ public class AgentTools
         var project = OptionalString(args, "project");
         var priority = OptionalPriority(args);
         var status = OptionalString(args, "status") ?? "open";
-        var dueWithin = OptionalString(args, "due_within");
+        var dueWithin = OptionalString(args, "dueWithin");
 
         if (status is not ("open" or "done" or "all"))
         {
@@ -247,7 +247,7 @@ public class AgentTools
             {
                 return Json(new { message = $"'{anyMatch.Task.Name}' is already done." });
             }
-            return Error(lookup.Error);
+            return lookup.Error;
         }
         var task = lookup.Task!;
         var openSubtasks = _store.Subtasks(task.Id).Count(t => !t.Completed);
@@ -273,14 +273,14 @@ public class AgentTools
         var confirmed = OptionalBool(args, "confirmed") == true;
         var askedEarlier = session.PendingDeletes.TryGetValue(task.Id, out var askedInTurn)
             && askedInTurn < session.Turn;
-        if (!confirmed && !askedEarlier)
+        if (!confirmed || !askedEarlier)
         {
             session.PendingDeletes[task.Id] = session.Turn;
             var subtasks = _store.Subtasks(task.Id).Count;
             var extra = subtasks > 0 ? $" and its {subtasks} subtask(s)" : "";
             return Json(new
             {
-                needConfirmation = true,
+                needsConfirmation = true,
                 message = $"Nothing was deleted. Ask the user to confirm deleting '{task.Name}'{extra}. If they agree in their next message, call delete_task again with confirmed true."
             });
         }
